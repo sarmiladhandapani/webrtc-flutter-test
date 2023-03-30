@@ -21,11 +21,9 @@ class MeetingPage extends StatefulWidget {
 
 class _MeetingPageState extends State<MeetingPage> {
   final _localRenderer = RTCVideoRenderer();
-  final RTCVideoRenderer _remoteRenderer = RTCVideoRenderer();
   final Map<String, dynamic> mediaConstraints = {'audio': true, 'video': true};
   bool isConnectionFailed = false;
   WebRTCMeetingHelper? meetingHelper;
-  late RTCPeerConnection _peerConnection;
 
   @override
   Widget build(BuildContext context) {
@@ -55,6 +53,7 @@ class _MeetingPageState extends State<MeetingPage> {
       userId: userId,
       name: widget.name,
     );
+
 
     MediaStream _localStream =
         await navigator.mediaDevices.getUserMedia(mediaConstraints);
@@ -92,9 +91,6 @@ class _MeetingPageState extends State<MeetingPage> {
       print('--------=============================END');
       onMeetingEnd();
     });
-    meetingHelper!.on('candidate', context, (ev, context) {
-      print('--------=============================CANDIDATE');
-    });
     meetingHelper!.on('connection-setting-changed', context, (ev, context) {
       print('--------=============================CON_SET_CH');
       setState(() {
@@ -111,42 +107,11 @@ class _MeetingPageState extends State<MeetingPage> {
 
   initRenderers() async {
     await _localRenderer.initialize();
-    await _remoteRenderer.initialize();
-    _initializePeerConnection();
-  }
-
-  void _initializePeerConnection() async {
-    _peerConnection = await createPeerConnection({});
-    // Get access to the camera and microphone
-    final mediaStream = await navigator.mediaDevices.getUserMedia({
-      'audio': true,
-      'video': {
-        'facingMode': 'user', // use the front-facing camera
-      }
-    });
-
-    mediaStream.getTracks().forEach((track) {
-      _peerConnection.addTrack(track, mediaStream);
-    });
-    _localRenderer.srcObject = mediaStream;
-
-    // Set up the remote video renderer
-    _peerConnection.onTrack = (event) {
-      print('----------------------------------ENET $event');
-      if (event.track.kind == 'video') {
-        _remoteRenderer.srcObject = event.streams[0];
-      }
-    };
-
-    final offer = await _peerConnection.createOffer();
-    await _peerConnection.setLocalDescription(offer);
-
   }
 
   @override
   void initState() {
     initRenderers();
-
     startMeeting();
     super.initState();
   }
@@ -155,8 +120,6 @@ class _MeetingPageState extends State<MeetingPage> {
   void deactivate() {
     super.deactivate();
     _localRenderer.dispose();
-    _peerConnection.dispose();
-    _remoteRenderer.dispose();
     if (meetingHelper != null) {
       meetingHelper!.destroy();
       meetingHelper = null;
@@ -209,58 +172,41 @@ class _MeetingPageState extends State<MeetingPage> {
   Widget buildMeetingRoom() {
     return Stack(
       children: [
-        // meetingHelper != null && meetingHelper!.connections.isNotEmpty
-        //     ? GridView.count(
-        //         crossAxisCount: meetingHelper!.connections.length,
-        //         children:
-        //             List.generate(meetingHelper!.connections.length, (index) {
-        //           return Padding(
-        //             padding: const EdgeInsets.all(1),
-        //             child: RemoteConnection(
-        //               renderer: meetingHelper!.connections[index].renderer,
-        //               connection: meetingHelper!.connections[index],
-        //             ),
-        //           );
-        //         }),
-        //       )
-        // true
-        //     ? Positioned(
-        //         bottom: 10,
-        //         right: 0,
-        //         child: SizedBox(
-        //           width: 150,
-        //           height: 200,
-        //           child: RTCVideoView(_remoteRenderer),
-        //         ),
-        //       )
-        //     : const Center(
-        //         child: Padding(
-        //           padding: EdgeInsets.all(10),
-        //           child: Text(
-        //             'Waiting for participants to join the meeting',
-        //             textAlign: TextAlign.center,
-        //             style: TextStyle(
-        //               color: Colors.grey,
-        //               fontSize: 24,
-        //             ),
-        //           ),
-        //         ),
-        //       ),
-        // Positioned(
-        //   bottom: 10,
-        //   right: 0,
-        //   child: SizedBox(
-        //     width: 150,
-        //     height: 200,
-        //     child: RTCVideoView(_localRenderer),
-        //   ),
-        // ),
-        RTCVideoView(
-          _localRenderer,
-          mirror: true,
-          objectFit: RTCVideoViewObjectFit.RTCVideoViewObjectFitCover,
-        ),
-        RTCVideoView(_remoteRenderer),
+        meetingHelper != null && meetingHelper!.connections.isNotEmpty
+            ? GridView.count(
+                crossAxisCount: meetingHelper!.connections.length,
+                children:
+                    List.generate(meetingHelper!.connections.length, (index) {
+                  return Padding(
+                    padding: const EdgeInsets.all(1),
+                    child: RemoteConnection(
+                      renderer: meetingHelper!.connections[index].renderer,
+                      connection: meetingHelper!.connections[index],
+                    ),
+                  );
+                }),
+              )
+            : const Center(
+                child: Padding(
+                  padding: EdgeInsets.all(10),
+                  child: Text(
+                    'Waiting for participants to join the meeting',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: Colors.grey,
+                      fontSize: 24,
+                    ),
+                  ),
+                ),
+              ),
+        Positioned(
+            bottom: 10,
+            right: 0,
+            child: SizedBox(
+              width: 150,
+              height: 200,
+              child: RTCVideoView(_localRenderer),
+            ),),
       ],
     );
   }
