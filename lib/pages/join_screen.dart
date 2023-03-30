@@ -1,14 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:snippet_coder_utils/FormHelper.dart';
+import 'package:webrtc_test/pages/meeting_page.dart';
 
 import '../models/meeting_details.dart';
 
 class JoinScreen extends StatefulWidget {
   final MeetingDetail? meetingDetail;
-  const JoinScreen({Key? key, this.meetingDetail,}): super(key: key);
+  const JoinScreen({
+    Key? key,
+    this.meetingDetail,
+  }) : super(key: key);
   @override
   State<JoinScreen> createState() => _JoinScreenState();
 }
+
 class _JoinScreenState extends State<JoinScreen> {
   static final GlobalKey<FormState> globalKey = GlobalKey<FormState>();
   String userName = "";
@@ -34,7 +39,6 @@ class _JoinScreenState extends State<JoinScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-
             const SizedBox(
               height: 20,
             ),
@@ -42,13 +46,13 @@ class _JoinScreenState extends State<JoinScreen> {
               context,
               "userId",
               "Enter your Name",
-                  (val) {
+              (val) {
                 if (val.isEmpty) {
                   return "Name can`t be empty";
                 }
                 return null;
               },
-                  (onSaved) {
+              (onSaved) {
                 userName = onSaved;
               },
             ),
@@ -61,8 +65,18 @@ class _JoinScreenState extends State<JoinScreen> {
                 Flexible(
                   child: FormHelper.submitButton(
                     "Join",
-                        () {
+                    () {
                       if (validateAndSave()) {
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => MeetingPage(
+                              meetingDetail: widget.meetingDetail!,
+                              meetingId: widget.meetingDetail!.id,
+                              name: userName,
+                            ),
+                          ),
+                        );
                       }
                     },
                   ),
@@ -83,5 +97,4 @@ class _JoinScreenState extends State<JoinScreen> {
     }
     return false;
   }
-
 }

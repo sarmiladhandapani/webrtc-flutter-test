@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:webrtc_test/utils/user.utils.dart';
 
-String MEETING_API_URl = 'http://192.168.1.4:4000/api/meeting';
+String MEETING_API_URl = 'http://192.168.1.5:4000/api/meeting';
 var client = http.Client();
 
 Future<http.Response?> startMeeting() async {
@@ -18,7 +18,7 @@ Future<http.Response?> startMeeting() async {
       'hostName': ''
     })
   );
-  print('start.....');
+  print('-------------------------');
   print(response.body);
   if(response.statusCode == 200) {
     return response;
@@ -30,6 +30,9 @@ Future<http.Response?> startMeeting() async {
 
 Future<http.Response> joinMeeting(String meetingId) async {
   var response = await http.get(Uri.parse('$MEETING_API_URl/join?meetingId=$meetingId'));
+
+  print('-------------------------');
+  print(response.body);
   print('$MEETING_API_URl/join?meetingId=$meetingId');
   if(response.statusCode >= 200 && response.statusCode < 400) {
     return response;

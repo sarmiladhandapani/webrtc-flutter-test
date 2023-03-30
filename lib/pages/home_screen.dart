@@ -84,6 +84,9 @@ class _HomeScreenState extends State<HomeScreen> {
                     "Start Meeting",
                     () async {
                       var response = await startMeeting();
+
+                      print('-------------------------');
+                      print(response!.body);
                       final body = json.decode(response!.body);
                       print(body);
                       final meetId = body['data'];
@@ -102,6 +105,7 @@ class _HomeScreenState extends State<HomeScreen> {
   void validateMeeting(String meetingId) async {
     try {
       Response response = await joinMeeting(meetingId);
+      print('-------------------------');
       print(response.body);
       var data = json.decode(response.body);
       final meetingDetails = MeetingDetail.fromJson(data["data"]);

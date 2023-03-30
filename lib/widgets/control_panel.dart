@@ -11,13 +11,13 @@ class ControlPanel extends StatelessWidget {
   final VoidCallback? onMeetingEnd;
 
   ControlPanel(
-      this.audioEnabled,
+      {this.audioEnabled,
       this.videoEnabled,
       this.onAudioToggle,
       this.onVideoToggle,
       this.isConnectionFailed,
       this.onMeetingEnd,
-      this.onReconnect);
+      this.onReconnect});
 
   @override
   Widget build(BuildContext context) {

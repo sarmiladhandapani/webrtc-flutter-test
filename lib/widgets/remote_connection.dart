@@ -59,6 +59,7 @@ class _RemoteConnectionState extends State<RemoteConnection> {
                 Icon(
                   widget.connection.audioEnabled! ? Icons.mic : Icons.mic_off,
                   color: Colors.white,
+                  size: 15,
                 ),
               ],
             ),
