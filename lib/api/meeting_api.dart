@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:webrtc_test/utils/user.utils.dart';
 
-String MEETING_API_URl = 'http://192.168.1.5:4000/api/meeting';
+String MEETING_API_URl = 'http://192.168.1.173:4000/api/meeting';
 var client = http.Client();
 
 Future<http.Response?> startMeeting() async {

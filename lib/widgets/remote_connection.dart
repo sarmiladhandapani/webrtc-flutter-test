@@ -21,7 +21,7 @@ class _RemoteConnectionState extends State<RemoteConnection> {
         SizedBox(
           child: RTCVideoView(
             widget.renderer,
-            mirror: false,
+            mirror: true,
             objectFit: RTCVideoViewObjectFit.RTCVideoViewObjectFitCover,
           ),
         ),

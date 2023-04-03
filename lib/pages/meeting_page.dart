@@ -48,7 +48,7 @@ class _MeetingPageState extends State<MeetingPage> {
     print('-------------------------');
     print(widget.meetingDetail.id);
     meetingHelper = WebRTCMeetingHelper(
-      url: 'http://192.168.1.5:4000',
+      url: 'http://192.168.1.173:4000',
       meetingId: widget.meetingDetail.id,
       userId: userId,
       name: widget.name,
